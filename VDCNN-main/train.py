@@ -24,7 +24,7 @@ BATCH_SIZE = 128
 SHUFFLE_BUFFER = 1024
 LR = 1e-2
 EPOCHS = 10
-CLIP_NORM = 5.0
+CLIP_NORM = 7.0
 
 DATASET_NAME = 'ag_news'
 
@@ -106,7 +106,7 @@ model = VDCNN(num_classes=num_classes,
 
 # Optimizer
 optimizer = tf.keras.optimizers.SGD(learning_rate=LR, 
-                                    momentum=0.0)
+                                    momentum=0.9)
     
 # Loss and Metrices
 loss_object = tf.keras.losses.CategoricalCrossentropy(from_logits=True)
