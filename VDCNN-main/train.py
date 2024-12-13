@@ -4,7 +4,11 @@ import tensorflow_datasets as tfds
 
 from vdcnn import *
 from utils import *
+import matplotlib.pyplot as plt
 
+# 保存每个epoch的损失和准确率数据
+test_losses = []
+test_accuracies = []
 # --------------------
 # Hyperparameters
 # --------------------
@@ -12,13 +16,13 @@ MAXLEN = 1014
 DEPTH = 9
 EMBED_DIM = 16
 SHORTCUT = True
-POOL_TYPE = 'k_max'
+POOL_TYPE = 'max'
 PROJ_TYPE = 'identity'
 USE_BIAS = True
 
-BATCH_SIZE = 64
-SHUFFLE_BUFFER = 256
-LR = 5e-3
+BATCH_SIZE = 128
+SHUFFLE_BUFFER = 1024
+LR = 1e-2
 EPOCHS = 10
 CLIP_NORM = 5.0
 
@@ -160,6 +164,39 @@ for epoch in range(EPOCHS):
     print(f'Epoch {epoch + 1}, ' 
           f'Test Loss: {test_loss.result()}, '
           f'Test Accuracy: {test_accuracy.result() * 100}')
+    # 记录当前epoch的损失和准确率
+    epoch_loss = test_loss.result().numpy()
+    epoch_acc = test_accuracy.result().numpy()
+
+    test_losses.append(epoch_loss)
+    test_accuracies.append(epoch_acc)
 
     # Save model every epoch
     ckpt_manager.save()
+
+# 绘制 Loss 图表并保存到本地
+plt.figure(figsize=(10, 5))
+plt.plot(range(1, EPOCHS + 1), test_losses, marker='o', label='Test Loss')
+plt.title('Test Loss per Epoch')
+plt.xlabel('Epoch')
+plt.ylabel('Loss')
+plt.legend()
+plt.grid()
+
+# 保存图表到本地文件
+plt.savefig('test_loss.png')
+
+# 绘制 Accuracy 图表并保存到本地
+plt.figure(figsize=(10, 5))
+plt.plot(range(1, EPOCHS + 1), test_accuracies, marker='o', label='Test Accuracy')
+plt.title('Test Accuracy per Epoch')
+plt.xlabel('Epoch')
+plt.ylabel('Accuracy')
+plt.legend()
+plt.grid()
+
+# 保存图表到本地文件
+plt.savefig('test_accuracy.png')
+
+# 显示图表
+plt.show()
